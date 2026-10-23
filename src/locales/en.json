@@ -1,0 +1,516 @@
+{
+  "brand": {
+    "name": "BeyondEducations",
+    "tagline": "Empowering Future Learning",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "phone": "+91 98450 12345",
+    "email": "admissions@beyondeducations.com"
+  },
+  "nav": {
+    "take_quiz": "Take the Free Quiz",
+    "admin": "Counsellor Portal",
+    "privacy": "Privacy Policy"
+  },
+  "landing": {
+    "badge": "Free 6-Minute Course Fit Assessment",
+    "hero_title": "Confused about what to study after 12th?",
+    "hero_highlight": "Find your best-fit course in 6 minutes.",
+    "hero_subtitle": "Free. No login to start. Get a personalised guidance report for you and your parents based on your genuine interests, stream, and budget.",
+    "cta_primary": "Start Free Quiz",
+    "cta_secondary": "How It Works",
+    "stats_students": "1,000+ Students Guided",
+    "stats_sample": "Sample Metric",
+    "stats_satisfaction": "98% Positive Feedback",
+    "how_it_works_title": "How it works in 3 easy steps",
+    "how_it_works_subtitle": "A structured, pressure-free way to explore the right first degree.",
+    "step1_title": "Take the 6-min Quiz",
+    "step1_desc": "Answer quick questions about your natural interests, preferred study style, and 12th stream.",
+    "step2_title": "See Your Profile",
+    "step2_desc": "Explore your RIASEC archetype, strengths overview, and radar interest breakdown.",
+    "step3_title": "Get Full Report & Guidance",
+    "step3_desc": "Unlock 3-5 curated courses, indicative fees, colleges in Bengaluru/Karnataka, and parent summary.",
+    "trust_title": "Expert guidance trusted by students and parents",
+    "trust_subtitle": "Meet our Bangalore-based senior academic advisors.",
+    "sample_badge": "Sample",
+    "faq_title": "Frequently Asked Questions",
+    "faq_subtitle": "Everything you need to know before starting your assessment.",
+    "sticky_cta": "Start Free Quiz (6 Mins)",
+    "bengaluru_note": "Designed for students in Bengaluru & Karnataka"
+  },
+  "questions": {
+    "progress_part_a": "Part A · Your Natural Interests",
+    "progress_part_b": "Part B · Strengths & Work Style",
+    "progress_part_c": "Part C · Practical Profile",
+    "part_c_banner": "A few quick details so we can match fees and eligibility",
+    "rating_hint": "Rate how well this describes you",
+    "back": "Back",
+    "next": "Next Question",
+    "finish": "View My Fit Profile",
+    "scale_not_me": "Not me at all",
+    "scale_neutral": "Somewhat me",
+    "scale_very_me": "Very me",
+    "select_all_that_apply": "Select all that apply",
+    "q1": { "title": "I enjoy taking things apart to see how they work." },
+    "q2": { "title": "I like finding out why something happens, even if it takes hours." },
+    "q3": { "title": "I enjoy drawing, designing, writing or making videos." },
+    "q4": { "title": "Friends often come to me to talk through their problems." },
+    "q5": { "title": "I like convincing people or organising a group to get something done." },
+    "q6": { "title": "I like keeping things neat, planned and accurate." },
+    "q7": { "title": "I'd rather build a model or prototype than write an essay." },
+    "q8": { "title": "Maths or science puzzles feel like a fun challenge, not a chore." },
+    "q9": { "title": "I imagine new ideas such as app concepts, stories or product designs." },
+    "q10": { "title": "I enjoy teaching or explaining concepts to others." },
+    "q11": { "title": "I follow business news or dream of starting something of my own." },
+    "q12": { "title": "I like working with data, tables and calculations." },
+    "q13": {
+      "title": "Which subjects do you score best in or enjoy the most?",
+      "subtitle": "Pick 2 to 4 subjects that feel natural to you"
+    },
+    "q14": { "title": "What is your preferred work style?" },
+    "q15": { "title": "What matters most to you in your future career?" },
+    "q16": {
+      "title": "Are you comfortable with heavy maths and long study hours?",
+      "subtitle": "E.g. Intensive tracks like CA, MBBS, Architecture, or Engineering"
+    },
+    "q17": { "title": "What is your 12th standard stream?" },
+    "q18": { "title": "What is your current 12th standard status?" },
+    "q19": {
+      "title": "Your academic scores & entrance examinations",
+      "percentage_label": "Percentage (expected or actual):",
+      "exams_label": "Entrance exams taken or planned (select all):"
+    },
+    "q20": {
+      "title": "What is your total estimated budget for the full degree?",
+      "subtitle": "Includes total tuition fees over 3 to 5 years"
+    },
+    "q21": {
+      "title": "Location preferences & mobility",
+      "location_label": "Preferred college location:",
+      "relocate_label": "Willing to relocate outside home city if a good college is found?"
+    },
+    "q22": { "title": "What is your biggest worry right now?" },
+    "q23": { "title": "When do you plan to finalise your college decision?" }
+  },
+  "options": {
+    "yes": "Yes, absolutely",
+    "somewhat": "Somewhat comfortable",
+    "not_really": "Not really / Prefer lighter maths",
+    "no": "No, prefer staying local"
+  },
+  "subjects": {
+    "maths": "Mathematics",
+    "physics": "Physics",
+    "chemistry": "Chemistry",
+    "biology": "Biology",
+    "accountancy": "Accountancy",
+    "economics": "Economics",
+    "business_studies": "Business Studies",
+    "english": "English",
+    "history_polscience": "History / Political Science",
+    "computer_science": "Computer Science",
+    "art_design": "Art / Design"
+  },
+  "work_style": {
+    "alone": "Working independently / alone",
+    "team": "Collaborating in a team",
+    "leading": "Leading and directing a team"
+  },
+  "career_value": {
+    "security": "Job security & stable growth",
+    "income": "High income & rapid wealth",
+    "creativity": "Creativity & self-expression",
+    "helping": "Helping society & making impact"
+  },
+  "streams": {
+    "pcm": "Science (PCM - Physics, Chem, Maths)",
+    "pcb": "Science (PCB - Physics, Chem, Biology)",
+    "pcmb": "Science (PCMB - All four sciences)",
+    "commerce": "Commerce (Accounts, Stats, Business)",
+    "arts": "Arts & Humanities (History, Pol Sci, Psych)"
+  },
+  "status12": {
+    "appearing": "Appearing this year (Class 12)",
+    "passed_out": "Passed, results are out",
+    "gap_year": "Passed earlier (Gap year / Re-attempt)"
+  },
+  "percentage": {
+    "below_60": "Below 60%",
+    "60_75": "60% - 75%",
+    "75_90": "75% - 90%",
+    "above_90": "Above 90%"
+  },
+  "exams": {
+    "cuet": "CUET (Central Univs)",
+    "jee": "JEE Main / Advanced",
+    "neet": "NEET UG",
+    "kcet": "KCET / Karnataka CET",
+    "clat": "CLAT / Law CET",
+    "nid_nift": "NID / NIFT / UCEED",
+    "none": "None yet / Direct Merit"
+  },
+  "budget": {
+    "under_3": "Under ₹3 Lakh (Total degree)",
+    "3_8": "₹3 - ₹8 Lakh (Moderate)",
+    "8_15": "₹8 - ₹15 Lakh (Comfortable)",
+    "above_15": "Above ₹15 Lakh (Premium / Abroad)"
+  },
+  "location": {
+    "bengaluru": "In Bengaluru only",
+    "karnataka": "Within Karnataka (Mysuru, Mangaluru, etc.)",
+    "india": "Anywhere in India",
+    "abroad_later": "Open to studying abroad later"
+  },
+  "worries": {
+    "fees": "High college fees & affordability",
+    "course_choice": "Choosing the right course for my personality",
+    "admissions": "Admission cutoffs & entrance competition",
+    "placements": "Future placements & starting salary"
+  },
+  "decide_time": {
+    "this_month": "This month (Urgent)",
+    "3_months": "Within 3 months",
+    "exploring": "Just exploring options"
+  },
+  "teaser": {
+    "analysing_title": "Analysing your responses...",
+    "analysing_subtitle": "Synthesising your RIASEC profile, stream eligibility and fee band.",
+    "profile_ready": "Your Course Fit Archetype is Ready!",
+    "profile_code_label": "Primary Interest Code:",
+    "radar_title": "Your Interest Balance",
+    "radar_subtitle": "A visual snapshot across all six interest dimensions.",
+    "matches_found": "We found {{count}} course paths that fit your stream and budget",
+    "unlock_banner": "Enter your contact details to unlock the full report, college matches, and salary projections.",
+    "form_name": "Student Full Name",
+    "form_name_placeholder": "e.g. Suhas Rao",
+    "form_phone": "Mobile Number (WhatsApp)",
+    "form_phone_placeholder": "10-digit number starting with 6-9",
+    "form_otp_btn": "Send OTP",
+    "form_otp_sent": "OTP Sent!",
+    "form_otp_label": "Enter 4-Digit OTP",
+    "form_otp_hint": "Demo mode: enter any 4 digits",
+    "form_email": "Email Address",
+    "form_email_placeholder": "e.g. suhas@example.com",
+    "form_city": "Current City",
+    "form_city_placeholder": "e.g. Bengaluru",
+    "form_parent_phone": "Parent / Guardian Mobile (Optional)",
+    "form_parent_phone_placeholder": "10-digit mobile number",
+    "form_parent_phone_helper": "We will share a parent summary report directly to their WhatsApp.",
+    "form_filler_label": "Who is completing this form?",
+    "form_filler_student": "Student",
+    "form_filler_parent": "Parent / Guardian",
+    "form_consent": "I agree to be contacted for admission guidance and agree to the Privacy Policy. If under 18, parent/guardian consent is provided.",
+    "submit_btn": "Unlock My Full Personalised Report",
+    "validation_name": "Please enter student's full name",
+    "validation_phone": "Please enter a valid 10-digit Indian mobile number",
+    "validation_email": "Please enter a valid email address",
+    "validation_otp": "Please enter 4 digits for demo verification",
+    "validation_consent": "Consent is required to unlock your report"
+  },
+  "report": {
+    "badge": "Personalised Course Fit Report",
+    "guidance_banner": "Guidance, not a verdict. We recommend exploring multiple course options.",
+    "whatsapp_sent_title": "Sent to your WhatsApp!",
+    "whatsapp_mock_bubble": "Hi {{name}}! 👋 Here is your BeyondEducations Career Fit Report. Your primary archetype is {{profileName}} ({{code}}). We have matched top courses fitting your stream and budget in Bengaluru. View your report online anytime: https://beyondeducations.com/report",
+    "email_sent_note": "A summary PDF has also been queued for delivery to {{email}}.",
+    "cover_date": "Report Generated:",
+    "cover_for": "Prepared for:",
+    "section_strengths": "1. Plain-Language Strengths",
+    "section_radar": "2. Interest Profile Breakdown",
+    "section_courses": "3. Recommended Best-Fit Course Paths",
+    "courses_disclaimer": "Ranked by interest alignment, stream prerequisites, and budget fit. Showing top 3-5 options:",
+    "why_fits_you": "Why this fits you:",
+    "duration": "Duration:",
+    "years": "years",
+    "indicative_fee": "Indicative Total Fee:",
+    "lakhs": "Lakhs",
+    "key_exams": "Key Entrance Exams:",
+    "fresher_salary": "Typical Fresher Salary:",
+    "lpa": "LPA",
+    "budget_within": "Within Budget",
+    "budget_slightly_above": "Slightly Above Budget",
+    "budget_above": "Above Budget Band",
+    "section_exams": "4. Upcoming Entrance Exams & Indicative Timelines",
+    "exams_sample_tag": "Sample timelines - verify with official conducting bodies",
+    "section_colleges": "5. Budget-Matched College Categories (Bengaluru & Karnataka)",
+    "colleges_sample_tag": "Sample data - to be verified with respective institutions",
+    "partner_tag": "Partner Institution",
+    "section_parent": "6. One-Page Parent Summary",
+    "parent_strengths_title": "Student's Key Strengths:",
+    "parent_courses_title": "Top Suggested Degree Options:",
+    "parent_budget_title": "Estimated Total Cost Range:",
+    "parent_checklist_title": "Next-Steps Checklist for Parents:",
+    "checklist_item_1": "Discuss course preferences with your child without career pressure.",
+    "checklist_item_2": "Verify entrance examination registration deadlines (KCET, CUET, etc.).",
+    "checklist_item_3": "Attend a complimentary 1-on-1 strategy session with a BeyondEducations advisor.",
+    "cta_book_counselling": "Book a Free 1-on-1 Counselling Session",
+    "cta_download_pdf": "Download PDF Report",
+    "cta_share_wa": "Share on WhatsApp",
+    "whatsapp_share_text": "Hey! I just completed the BeyondEducations Career Interest Quiz and found my best-fit degree paths in Bengaluru. Check out my report archetype: {{profileName}} ({{code}}). Try it free here: https://beyondeducations.com"
+  },
+  "booking": {
+    "title": "Book Your Free 1-on-1 Counselling Session",
+    "subtitle": "Speak directly with an expert counsellor in Indiranagar, Bengaluru or via Google Meet.",
+    "select_date": "Choose Preferred Date:",
+    "select_time": "Choose Preferred Time Slot:",
+    "mode_label": "Consultation Mode:",
+    "mode_online": "Online Video Call (Google Meet)",
+    "mode_in_person": "In-Person (Indiranagar, Bengaluru)",
+    "confirm_btn": "Confirm Counselling Slot",
+    "success_title": "Session Booked Successfully! 🎉",
+    "success_message": "Our senior advisor will connect with you on WhatsApp and phone to confirm the meeting calendar invite.",
+    "close": "Close"
+  },
+  "disclaimer": {
+    "footer_note": "Guidance based on your interests. Please discuss with a qualified counsellor before deciding."
+  },
+  "footer": {
+    "rights": "All rights reserved. Empowering future learners across Karnataka & India.",
+    "bengaluru_office": "Bengaluru Office: Indiranagar 100ft Road, Bengaluru, Karnataka 560038",
+    "privacy_link": "Privacy Policy & DPDP Notice",
+    "delete_data": "Delete My Stored Data"
+  },
+  "faq": {
+    "q1_question": "Is the Career Interest Quiz really free?",
+    "q1_answer": "Yes, 100% free! You can take the 6-minute assessment, view your archetype analysis, and download the full personalised course report without paying anything.",
+    "q2_question": "Is my personal contact data safe?",
+    "q2_answer": "Absolutely. Your data is stored securely in your browser and used strictly to deliver your guidance report and provide genuine counselling support. We comply with Indian DPDP Act norms and never sell data to spam lists.",
+    "q3_question": "Will you push specific private colleges?",
+    "q3_answer": "No. Our assessment matches government, aided, private, and deemed colleges purely based on your stream, scores, and declared budget. We offer objective guidance, not sponsored college quotas.",
+    "q4_question": "How accurate is the guidance?",
+    "q4_answer": "The assessment is structured around proven RIASEC career interest models adapted for 12th standard Indian curricula. It provides guidance, not a verdict, helping you shortlist 3-5 high-probability career paths."
+  },
+  "testimonials": {
+    "t1": "BeyondEducations helped me realise I didn't have to force myself into standard engineering when Data Science and BCA fit my coding interests with much less fee stress.",
+    "t2": "My parents wanted me to take commerce, but the quiz highlighted my creative-practical balance. We visited a design college in Bengaluru together and now I am loving B.Des!",
+    "t3": "The fee breakdown and college categories in the parent summary made it very easy for my dad to plan our budget for BCom with ACCA."
+  },
+  "profiles": {
+    "RI": {
+      "name": "The Hands-on Innovator",
+      "desc": "Practical, analytical, and curious about how physical systems and technologies work in the real world.",
+      "s1": "Strong spatial reasoning and logical deduction",
+      "s2": "Enjoys solving concrete engineering and technical problems",
+      "s3": "High perseverance in hands-on building and experimental tasks"
+    },
+    "RA": {
+      "name": "The Creative Artisan",
+      "desc": "Combines physical craftsmanship and aesthetic imagination to design functional products.",
+      "s1": "Translates imaginative visual concepts into physical or 3D forms",
+      "s2": "Keen eye for ergonomics, materials, and functional beauty",
+      "s3": "Thrives in studio, workshop, and prototyping settings"
+    },
+    "RS": {
+      "name": "The Practical Caregiver",
+      "desc": "Action-oriented and deeply motivated by helping others through tangible clinical and technical service.",
+      "s1": "Compassionate, calm presence in demanding situations",
+      "s2": "Strong physical coordination and diagnostic patience",
+      "s3": "Values meaningful service over abstract desk work"
+    },
+    "RE": {
+      "name": "The Enterprising Maker",
+      "desc": "Energetic, practical leader who loves coordinating technical projects and driving tangible results.",
+      "s1": "Decisive problem-solver who turns plans into execution",
+      "s2": "Comfortable commanding technology and managing field teams",
+      "s3": "Thrives in fast-paced operational and entrepreneurial environments"
+    },
+    "RC": {
+      "name": "The Methodical Technician",
+      "desc": "Disciplined, accurate, and systematic in handling equipment, software configurations, and data.",
+      "s1": "Exceptional attention to precision and safety protocols",
+      "s2": "Reliable in structured, process-driven environments",
+      "s3": "Prefers clear guidelines and verified methodologies"
+    },
+    "IR": {
+      "name": "The Hands-on Innovator",
+      "desc": "Deeply investigative with a strong desire to apply scientific principles to tangible engineering.",
+      "s1": "Analytical depth paired with practical application",
+      "s2": "Solves complex architectural and algorithmic problems",
+      "s3": "Self-motivated continuous learner in modern technologies"
+    },
+    "IA": {
+      "name": "The Innovative Visionary",
+      "desc": "Blends deep analytical inquiry with creative originality to design novel concepts and digital experiences.",
+      "s1": "Unconventional thinker capable of synthesising art and logic",
+      "s2": "Excels at creative problem-solving and conceptual design",
+      "s3": "Independent thinker driven by curiosity and aesthetics"
+    },
+    "IS": {
+      "name": "The Caring Scientist",
+      "desc": "Combines scientific curiosity with human empathy to diagnose problems and heal or teach others.",
+      "s1": "Patient listener with rigorous scientific discipline",
+      "s2": "Dedicated to improving health, human welfare, and education",
+      "s3": "Bridges complex medical/scientific ideas with accessible guidance"
+    },
+    "IE": {
+      "name": "The Analytical Strategist",
+      "desc": "Combines sharp analytical intelligence with business acumen and goal-oriented execution.",
+      "s1": "Quickly identifies patterns in data, markets, and human systems",
+      "s2": "Articulates complex strategic arguments with conviction",
+      "s3": "Enjoys competitive challenges and commercial problem solving"
+    },
+    "IC": {
+      "name": "The Technical Analyst",
+      "desc": "Rigorous, structured researcher who loves handling large datasets, finance, and technical proofs.",
+      "s1": "Meticulous verification of facts, figures, and calculations",
+      "s2": "Highly structured thinking and predictive modelling ability",
+      "s3": "Excels in environments valuing compliance and precision"
+    },
+    "AS": {
+      "name": "The Empathetic Creator",
+      "desc": "Expressive, sensitive, and passionate about telling stories that inspire and connect human communities.",
+      "s1": "High emotional intelligence and perceptive communication",
+      "s2": "Captivating storytelling across visual, written, and verbal media",
+      "s3": "Deep dedication to cultural and mental well-being"
+    },
+    "AE": {
+      "name": "The Creative Entrepreneur",
+      "desc": "Dynamic visionary who turns creative concepts into viable commercial brands and media ventures.",
+      "s1": "Charismatic communicator with bold aesthetic intuition",
+      "s2": "Identifies cultural trends before they become mainstream",
+      "s3": "Courageous risk-taker in marketing, entertainment, and branding"
+    },
+    "AC": {
+      "name": "The Precision Designer",
+      "desc": "Balances creative flair with methodical organization, typography, and detail-oriented production.",
+      "s1": "Combines artistic sensitivity with neatness and technical discipline",
+      "s2": "High quality standards in graphic, architectural, and print design",
+      "s3": "Methodical project execution with punctual timelines"
+    },
+    "SE": {
+      "name": "The Inspiring Mentor",
+      "desc": "Warm, influential leader who brings people together and motivates teams toward shared missions.",
+      "s1": "Natural charisma and persuasive interpersonal skills",
+      "s2": "Brings out the best in diverse teams and student groups",
+      "s3": "Excels in public advocacy, human resources, and social enterprise"
+    },
+    "SC": {
+      "name": "The Dedicated Administrator",
+      "desc": "Helpful, organized coordinator who ensures teams and institutions function smoothly and fairly.",
+      "s1": "Trustworthy, supportive, and dependable team player",
+      "s2": "Systematic documentation and empathetic customer/student service",
+      "s3": "Creates calm order in busy organizational environments"
+    },
+    "CE": {
+      "name": "The Organised Leader",
+      "desc": "Systematic executive who drives organizational success through financial discipline and structured leadership.",
+      "s1": "Mastery over business systems, accounts, and operational efficiency",
+      "s2": "Pragmatic decision-making backed by verifiable numbers",
+      "s3": "Natural executive presence and strategic managerial discipline"
+    }
+  },
+  "courses": {
+    "btech_cse": {
+      "name": "Computer Science & Engineering / Artificial Intelligence",
+      "why": "Fits your high analytical curiosity and love for solving technical puzzles through software."
+    },
+    "btech_core": {
+      "name": "Mechanical, Civil & Electronics Engineering",
+      "why": "Matches your hands-on drive to understand physical machinery, electronics, and infrastructure."
+    },
+    "bca": {
+      "name": "Bachelor of Computer Applications (Cloud & Software)",
+      "why": "Provides a hands-on, job-oriented IT path with practical coding and lower mathematical barriers."
+    },
+    "bsc_data_science": {
+      "name": "BSc Data Science, Statistics & AI",
+      "why": "Directly leverages your mathematical logic and passion for discovering trends in data."
+    },
+    "bsc_pure_sciences": {
+      "name": "BSc Pure Sciences (Physics / Chemistry / Maths)",
+      "why": "Ideal for a curious mind keen on deep fundamental research, academic exploration, or laboratory science."
+    },
+    "mbbs": {
+      "name": "Bachelor of Medicine & Bachelor of Surgery (MBBS)",
+      "why": "Aligns with your biological aptitude and compassionate dedication to patient healing."
+    },
+    "bds": {
+      "name": "Bachelor of Dental Surgery (BDS)",
+      "why": "Combines clinical diagnostic care with fine manual craftsmanship and patient interaction."
+    },
+    "bpharm": {
+      "name": "Bachelor of Pharmacy (B.Pharm)",
+      "why": "Brings together chemistry, healthcare, and pharmaceutical industry opportunities."
+    },
+    "bsc_nursing": {
+      "name": "BSc Nursing & Healthcare Services",
+      "why": "Offers an essential, globally demanded healthcare pathway with high direct patient care."
+    },
+    "bsc_agri": {
+      "name": "BSc (Hons) Agriculture & Agritech",
+      "why": "Matches practical outdoor interest with biology and modern sustainable agricultural technology."
+    },
+    "bcom_general": {
+      "name": "Bachelor of Commerce (Finance, Accounting & Taxation)",
+      "why": "A versatile foundation for corporate finance, auditing, banking, and business management."
+    },
+    "bcom_ca_acca": {
+      "name": "BCom Integrated with CA / ACCA International",
+      "why": "Ideal for disciplined students who want elite accounting credentials and high-paying audit careers."
+    },
+    "bba_general": {
+      "name": "Bachelor of Business Administration (BBA)",
+      "why": "Perfect for energetic communicators who enjoy leading teams, marketing, and corporate strategy."
+    },
+    "bba_entrepreneurship": {
+      "name": "BBA in Entrepreneurship & New Ventures",
+      "why": "Tailored for self-starters who dream of launching their own startups or managing family enterprises."
+    },
+    "bhm": {
+      "name": "Bachelor of Hotel Management & Hospitality",
+      "why": "Dynamic, service-led global career for students who love people, culinary arts, and event operations."
+    },
+    "bcom_banking": {
+      "name": "BCom Banking, Financial Markets & Fintech",
+      "why": "Focuses on modern banking systems, investment markets, and algorithmic financial tools."
+    },
+    "ba_bba_llb": {
+      "name": "BA LLB / BBA LLB (5-Year Integrated Law)",
+      "why": "Fits your persuasive communication, analytical debate skills, and interest in corporate or civil justice."
+    },
+    "ba_pol_science_civil": {
+      "name": "BA Political Science & Public Administration",
+      "why": "Provides a strong intellectual foundation for UPSC Civil Services, public policy, and governance."
+    },
+    "bdes": {
+      "name": "Bachelor of Design (B.Des - Product & Interaction)",
+      "why": "Blends artistic originality with real-world user research to create tomorrow's apps and physical products."
+    },
+    "bfa": {
+      "name": "Bachelor of Fine Arts (Applied Arts & Visual Design)",
+      "why": "Celebrates your expressive visual creativity and prepares you for creative direction in agencies and studios."
+    },
+    "barch": {
+      "name": "Bachelor of Architecture (B.Arch)",
+      "why": "Unites structural physics with spatial aesthetics to design homes, buildings, and urban landscapes."
+    },
+    "animation_vfx": {
+      "name": "BSc Animation, VFX, CGI & Game Design",
+      "why": "Channels your digital visual imagination into gaming, film production, and entertainment studios."
+    },
+    "ba_journalism": {
+      "name": "BA Mass Communication, Journalism & Digital Media",
+      "why": "Fosters your storytelling skills, interview acumen, and passion for investigative reporting."
+    },
+    "ba_psychology": {
+      "name": "BA / BSc Psychology & Behavioural Sciences",
+      "why": "Matches your deep interest in understanding human minds, emotions, and counselling."
+    },
+    "ba_economics": {
+      "name": "BA / BSc Economics & Econometrics",
+      "why": "Sharpens your ability to analyse market dynamics, public policy, and national financial systems."
+    },
+    "bsw_social_work": {
+      "name": "Bachelor of Social Work (BSW)",
+      "why": "A direct path to grassroots social change, NGO leadership, and community development."
+    },
+    "bed_integrated": {
+      "name": "Integrated Teacher Education (BA B.Ed / BSc B.Ed)",
+      "why": "Empowers you with modern pedagogy and academic leadership to inspire the next generation."
+    },
+    "aviation": {
+      "name": "BBA Aviation Management / Commercial Pilot Pathway",
+      "why": "Thrill-seeking, high-responsibility aviation career combining technical logistics and leadership."
+    }
+  }
+}

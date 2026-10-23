@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #14305E;
+  --color-brand-teal: #1B7A9C;
+  --color-brand-amber: #F2A12B;
+  --color-brand-bg: #F5F8FB;
+  --font-sans: 'Inter', 'Noto Sans Kannada', 'Noto Sans Tamil', 'Noto Sans Malayalam', system-ui, -apple-system, sans-serif;
+  --font-kannada: 'Noto Sans Kannada', sans-serif;
+  --font-tamil: 'Noto Sans Tamil', sans-serif;
+  --font-malayalam: 'Noto Sans Malayalam', sans-serif;
+}
+
+:root {
+  --brand-navy: #14305E;
+  --brand-teal: #1B7A9C;
+  --brand-amber: #F2A12B;
+  --brand-bg: #F5F8FB;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans Kannada', 'Noto Sans Tamil', 'Noto Sans Malayalam', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #F5F8FB;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for clean mobile feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print styling for PDF generation */
+@media print {
+  body {
+    background-color: white !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .page-break {
+    page-break-after: always;
+  }
+}
