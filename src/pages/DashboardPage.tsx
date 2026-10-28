@@ -15,6 +15,7 @@ import { NetworkScopeManager } from '../components/admin/NetworkScopeManager';
 import { WhatsAppContactManager } from '../components/admin/WhatsAppContactManager';
 import { FaqManager } from '../components/admin/FaqManager';
 import { FastTrackQuestionManager } from '../components/admin/FastTrackQuestionManager';
+import { AppointmentCalendar } from '../components/admin/AppointmentCalendar';
 import {
   Flame,
   Calendar,
@@ -64,7 +65,7 @@ export const DashboardPage: React.FC = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isFirebaseLive, setIsFirebaseLive] = useState<boolean>(() => isFirebaseConfigured());
   const [isLoadingLeads, setIsLoadingLeads] = useState<boolean>(false);
-  const [adminTab, setAdminTab] = useState<'leads' | 'colleges' | 'questions' | 'fasttrack' | 'network' | 'whatsapp' | 'faqs'>('leads');
+  const [adminTab, setAdminTab] = useState<'leads' | 'colleges' | 'questions' | 'fasttrack' | 'network' | 'whatsapp' | 'faqs' | 'calendar'>('leads');
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -567,6 +568,24 @@ export const DashboardPage: React.FC = () => {
               CRUD
             </span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('calendar')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'calendar'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Calendar className="w-4 h-4 text-[#1B7A9C]" />
+            <span>Appointment Calendar</span>
+            {leads.filter((l) => l.bookingStatus?.booked).length > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-extrabold">
+                {leads.filter((l) => l.bookingStatus?.booked).length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Tab 1: Leads & Funnel */}
@@ -878,6 +897,14 @@ export const DashboardPage: React.FC = () => {
 
     {/* Tab 6: FAQ Manager CRUD */}
     {adminTab === 'faqs' && <FaqManager />}
+
+    {/* Tab 7: Appointment Calendar */}
+    {adminTab === 'calendar' && (
+      <AppointmentCalendar
+        leads={leads}
+        onSelectLead={(lead) => setSelectedLead(lead)}
+      />
+    )}
   </div>
 
   {/* Lead Detail Inspection Drawer */}

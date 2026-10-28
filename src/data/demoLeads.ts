@@ -1,15 +1,24 @@
 export interface LeadScoreBreakdown {
-  status12Score: number; // +3 for passed_out or appearing? (rule: 12th passed or results out +3)
-  decisionTimeScore: number; // +3 for this month, +1 for 3 months
-  parentPhoneScore: number; // +2 if parent phone given
-  budgetScore: number; // +1 for 3-8L, +2 for 8L+
-  worryScore: number; // +2 for "course_choice"
-  completionScore: number; // +2 for all questions answered
+  status12Score: number;
+  decisionTimeScore: number;
+  parentPhoneScore: number;
+  budgetScore: number;
+  worryScore: number;
+  completionScore: number;
   total: number;
 }
 
 export type LeadPriority = 'Hot' | 'Warm' | 'Cold';
 export type LeadStatus = 'New' | 'Contacted' | 'Counselling booked' | 'Admitted' | 'Lost';
+export type CallOutcome = 'Called - No Answer' | 'Called - Interested' | 'Called - Not Interested' | 'WhatsApp Sent' | 'Email Sent' | 'Meeting Done' | 'Follow-up Scheduled';
+
+export interface CallLogEntry {
+  id: string;
+  timestamp: string;        // ISO string
+  outcome: CallOutcome;
+  note: string;
+  counsellor?: string;      // optional counsellor name
+}
 
 export interface Lead {
   id: string;
@@ -49,6 +58,8 @@ export interface Lead {
   };
   notes?: string;
   internalNotes?: string;
+  callLog?: CallLogEntry[];   // timestamped call / follow-up history
+  followUpDate?: string;      // ISO date string for next scheduled follow-up
   createdAt: string;
 }
 
