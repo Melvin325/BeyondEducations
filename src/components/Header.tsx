@@ -11,6 +11,7 @@ import {
 
 const LANGUAGES = [
   { code: 'en', label: 'EN' },
+  { code: 'hi', label: 'हिंदी' },
   { code: 'kn', label: 'ಕನ್ನಡ' },
   { code: 'ta', label: 'தமிழ்' },
   { code: 'ml', label: 'മലയാളം' },
@@ -62,7 +63,7 @@ export const Header: React.FC = () => {
                 onClick={scrollToColleges}
                 className="hover:text-[#14305E] transition-colors"
               >
-                Partner Colleges
+                {t('nav.partner_colleges')}
               </button>
               <button
                 type="button"
@@ -72,7 +73,7 @@ export const Header: React.FC = () => {
                 }}
                 className="hover:text-[#14305E] transition-colors"
               >
-                FAQs
+                {t('nav.faqs_link')}
               </button>
             </nav>
           )}
@@ -119,7 +120,7 @@ export const Header: React.FC = () => {
 
           {isAdmin && (
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-[#14305E] border border-slate-200">
-              Admin Portal
+              {t('nav.admin_portal')}
             </span>
           )}
         </div>

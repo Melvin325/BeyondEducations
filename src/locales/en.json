@@ -10,7 +10,10 @@
   "nav": {
     "take_quiz": "Take the Free Quiz",
     "admin": "Counsellor Portal",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "partner_colleges": "Partner Colleges",
+    "faqs_link": "FAQs",
+    "admin_portal": "Admin Portal"
   },
   "landing": {
     "badge": "Free 6-Minute Course Fit Assessment",
