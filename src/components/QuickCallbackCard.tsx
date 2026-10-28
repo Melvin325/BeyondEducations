@@ -232,17 +232,34 @@ export const QuickCallbackCard: React.FC<QuickCallbackCardProps> = ({
           </div>
 
           <div className="space-y-1">
-            <label className="font-bold text-slate-700 block">Target Region</label>
+            <label className="font-bold text-slate-700 block">Preferred City / Region</label>
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
               className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-hidden"
             >
-              <option value="Karnataka (Bangalore)">Karnataka (Bangalore Hub)</option>
-              <option value="Kerala">Kerala (Kochi, Calicut, TVM)</option>
-              <option value="Tamil Nadu">Tamil Nadu (Chennai, CBE, Vellore)</option>
-              <option value="Pan-India">Pan-India Top Universities</option>
-              <option value="Study Abroad">Study Abroad (UK, Ireland, Germany, etc.)</option>
+              <optgroup label="Karnataka">
+                <option value="Karnataka (Bangalore)">Bengaluru / Bangalore</option>
+                <option value="Mangalore & Manipal">Mangalore &amp; Manipal</option>
+                <option value="Mysuru">Mysuru</option>
+              </optgroup>
+              <optgroup label="Tamil Nadu">
+                <option value="Chennai">Chennai Hub</option>
+                <option value="Coimbatore">Coimbatore Hub</option>
+                <option value="Vellore & Trichy">Vellore &amp; Trichy</option>
+                <option value="Tamil Nadu">Other Tamil Nadu Cities</option>
+              </optgroup>
+              <optgroup label="Kerala">
+                <option value="Kochi / Ernakulam">Kochi / Ernakulam</option>
+                <option value="Calicut / Kozhikode">Calicut / Kozhikode</option>
+                <option value="Trivandrum">Trivandrum</option>
+                <option value="Kerala">Other Kerala Cities</option>
+              </optgroup>
+              <optgroup label="Pan-India &amp; Global">
+                <option value="Pan-India">Pan-India (NCR, Mumbai, Pune, Hyd)</option>
+                <option value="Study Abroad">Study Abroad (UK, Ireland, Germany, etc.)</option>
+                <option value="Others">Others / Not Sure</option>
+              </optgroup>
             </select>
           </div>
         </div>

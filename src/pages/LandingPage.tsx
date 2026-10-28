@@ -104,8 +104,19 @@ export const LandingPage: React.FC = () => {
   };
 
   const handleFinderSearch = () => {
-    // Sync filters with the colleges showcase
-    setSelectedHub(finderHub);
+    // Determine which region tab to map to
+    if (finderHub.includes('Chennai') || finderHub.includes('Coimbatore') || finderHub.includes('Tamil Nadu') || finderHub.includes('Vellore') || finderHub.includes('Madurai')) {
+      setSelectedHub('Tamil Nadu');
+    } else if (finderHub.includes('Kerala') || finderHub.includes('Kochi') || finderHub.includes('Calicut') || finderHub.includes('Trivandrum') || finderHub.includes('Kottayam')) {
+      setSelectedHub('Kerala');
+    } else if (finderHub.includes('Karnataka') || finderHub.includes('Bangalore') || finderHub.includes('Mangalore') || finderHub.includes('Mysuru')) {
+      setSelectedHub('Karnataka (Bangalore)');
+    } else if (finderHub.includes('Study Abroad')) {
+      setSelectedHub('Study Abroad');
+    } else {
+      setSelectedHub('All');
+    }
+
     const targetElement = document.getElementById('partner-colleges-section');
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -217,19 +228,40 @@ export const LandingPage: React.FC = () => {
                   </select>
                 </div>
 
-                {/* 2. Hub */}
+                {/* 2. Hub / Location */}
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Preferred Hub</label>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase">Target City / Hub</label>
                   <select
                     value={finderHub}
                     onChange={(e) => setFinderHub(e.target.value)}
                     className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 text-xs focus:outline-hidden"
                   >
-                    <option value="Karnataka (Bangalore)">Karnataka (Bangalore)</option>
-                    <option value="Kerala">Kerala (Kochi/Calicut/TVM)</option>
-                    <option value="Tamil Nadu">Tamil Nadu (Chennai/CBE)</option>
-                    <option value="Pan-India">Pan-India Tier 1 Univs</option>
-                    <option value="Study Abroad">Study Abroad (UK, Ireland, DE)</option>
+                    <optgroup label="Karnataka">
+                      <option value="Karnataka (Bangalore)">Bengaluru / Bangalore (All)</option>
+                      <option value="Bangalore - South">Bangalore South (RVCE / PES / Christ)</option>
+                      <option value="Bangalore - North">Bangalore North (MSRIT / Reva)</option>
+                      <option value="Mangalore / Manipal">Mangalore &amp; Manipal</option>
+                      <option value="Mysuru">Mysuru</option>
+                    </optgroup>
+                    <optgroup label="Tamil Nadu">
+                      <option value="Tamil Nadu">Tamil Nadu (All)</option>
+                      <option value="Chennai">Chennai (SRM / Loyola / MCC)</option>
+                      <option value="Coimbatore">Coimbatore (PSG Tech / Karunya)</option>
+                      <option value="Vellore / Trichy">Vellore (VIT) &amp; Trichy (NIT/SASTRA)</option>
+                      <option value="Madurai / Salem">Madurai &amp; Salem</option>
+                    </optgroup>
+                    <optgroup label="Kerala">
+                      <option value="Kerala">Kerala (All)</option>
+                      <option value="Kochi / Ernakulam">Kochi / Ernakulam (Amrita / Rajagiri / CUSAT)</option>
+                      <option value="Calicut / Kozhikode">Calicut / Kozhikode (NIT / KMCT)</option>
+                      <option value="Trivandrum">Trivandrum (CET / Mar Ivanios)</option>
+                      <option value="Kottayam / Thrissur">Kottayam &amp; Thrissur</option>
+                    </optgroup>
+                    <optgroup label="National &amp; Overseas">
+                      <option value="Pan-India">Pan-India (Delhi NCR, Mumbai, Pune, Hyderabad)</option>
+                      <option value="Study Abroad">Study Abroad (UK, Ireland, Germany, Australia, USA)</option>
+                      <option value="Others">Others / Not Decided Yet</option>
+                    </optgroup>
                   </select>
                 </div>
 
@@ -267,7 +299,13 @@ export const LandingPage: React.FC = () => {
                     ? 'Start PG (MBA/Masters) 90s Matcher'
                     : finderLevel === 'Study Abroad'
                     ? 'Start Study Abroad 90s Matcher'
-                    : `Find Verified Colleges in ${finderHub === 'Karnataka (Bangalore)' ? 'Bangalore' : finderHub}`}
+                    : `Find Verified Colleges in ${
+                        finderHub === 'Karnataka (Bangalore)'
+                          ? 'Bangalore'
+                          : finderHub === 'Tamil Nadu'
+                          ? 'Tamil Nadu'
+                          : finderHub
+                      }`}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5 text-[#F2A12B]" />
               </button>
