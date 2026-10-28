@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Leads Collection (Student Quiz Submissions)
+    match /leads/{leadId} {
+      // Allow any visitor to create a lead from the quiz
+      allow create: if request.resource.data.phone is string
+                    && request.resource.data.name is string
+                    && request.resource.data.phone.size() >= 10;
+      
+      // Allow reading and updating leads (counsellor dashboard)
+      allow read, update: if true;
+      
+      // Allow delete for privacy compliance (DPDP Act)
+      allow delete: if true;
+    }
+    
+    // 2. Consultations Collection (1-on-1 Appointments)
+    match /consultations/{consultationId} {
+      allow create: if request.resource.data.phone is string
+                    && request.resource.data.studentName is string;
+      allow read, update, delete: if true;
+    }
+
+    // 3. Colleges Collection (Colleges BeyondEducations works with)
+    match /colleges/{collegeId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // 4. Quiz Questions Collection (Dynamic Admin-Managed Quiz Bank)
+    match /quiz_questions/{questionId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // 5. Site Configuration (WhatsApp Number, Helpline, Settings)
+    match /site_config/{configId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // 6. FAQs Collection (Dynamic Admin-Managed Frequently Asked Questions)
+    match /faqs/{faqId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // 7. Fast-Track Questions Collection (PG & Study Abroad Questions)
+    match /fast_track_questions/{questionId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+  }
+}
+
+

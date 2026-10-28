@@ -1,26 +1,43 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { BRAND_CONFIG } from '../config/brand';
-import { Lead, LeadPriority } from '../data/demoLeads';
-import { getCounsellorLeads, resetDemoLeads } from '../lib/storage';
-import { LeadDrawer } from '../components/LeadDrawer';
-import { Logo } from '../components/Logo';
+import { Lead } from '../data/demoLeads';
 import {
-  Users,
-  CheckCircle,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { getCounsellorLeads, getCounsellorLeadsAsync, resetDemoLeads, subscribeToCounsellorLeads } from '../lib/storage';
+import { isFirebaseConfigured, auth } from '../lib/firebase';
+import { LeadDrawer } from '../components/LeadDrawer';
+import { CollegeManager } from '../components/admin/CollegeManager';
+import { QuestionManager } from '../components/admin/QuestionManager';
+import { NetworkScopeManager } from '../components/admin/NetworkScopeManager';
+import { WhatsAppContactManager } from '../components/admin/WhatsAppContactManager';
+import { FaqManager } from '../components/admin/FaqManager';
+import { FastTrackQuestionManager } from '../components/admin/FastTrackQuestionManager';
+import {
   Flame,
   Calendar,
   Percent,
   Search,
-  Filter,
   Download,
   RotateCcw,
   Lock,
   ArrowRight,
   TrendingUp,
-  Phone,
-  MessageSquare,
-  Clock,
+  RefreshCw,
   Eye,
+  Database,
+  Radio,
+  LogOut,
+  Mail,
+  ShieldAlert,
+  Building,
+  HelpCircle,
+  Users,
+  Globe2,
+  MessageCircle,
+  Sparkles,
 } from 'lucide-react';
 import {
   BarChart,
@@ -36,11 +53,18 @@ export const DashboardPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('beyond_admin_auth') === 'true';
   });
+  const [emailInput, setEmailInput] = useState<string>('');
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isSigningIn, setIsSigningIn] = useState<boolean>(false);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const useFirebaseAuth = isFirebaseConfigured() && Boolean(auth);
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isFirebaseLive, setIsFirebaseLive] = useState<boolean>(() => isFirebaseConfigured());
+  const [isLoadingLeads, setIsLoadingLeads] = useState<boolean>(false);
+  const [adminTab, setAdminTab] = useState<'leads' | 'colleges' | 'questions' | 'fasttrack' | 'network' | 'whatsapp' | 'faqs'>('leads');
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -49,27 +73,104 @@ export const DashboardPage: React.FC = () => {
   const [budgetFilter, setBudgetFilter] = useState<string>('All');
   const [langFilter, setLangFilter] = useState<string>('All');
 
-  // Load leads
-  const loadLeads = () => {
-    const list = getCounsellorLeads();
-    setLeads(list);
+  // Load leads from Firebase async (with localStorage fallback)
+  const loadLeads = async () => {
+    setIsLoadingLeads(true);
+    try {
+      const { leads: list, isLive } = await getCounsellorLeadsAsync();
+      setLeads(list);
+      setIsFirebaseLive(isLive);
+    } catch (err) {
+      console.warn('Error loading leads:', err);
+    } finally {
+      setIsLoadingLeads(false);
+    }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
       loadLeads();
+
+      // Real-time Firestore sync
+      const unsubscribe = subscribeToCounsellorLeads((liveLeads) => {
+        setLeads(liveLeads);
+        setIsFirebaseLive(true);
+      });
+
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
     }
   }, [isAuthenticated]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Sync Firebase Auth state on mount
+  useEffect(() => {
+    if (!auth) return;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        setAdminEmail(user.email);
+        sessionStorage.setItem('beyond_admin_auth', 'true');
+      } else {
+        // Only clear if using Firebase auth (don't clear demo session)
+        if (sessionStorage.getItem('beyond_admin_auth_method') === 'firebase') {
+          setIsAuthenticated(false);
+          setAdminEmail(null);
+          sessionStorage.removeItem('beyond_admin_auth');
+        }
+      }
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === BRAND_CONFIG.ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('beyond_admin_auth', 'true');
-      setAuthError(null);
+    setAuthError(null);
+    setIsSigningIn(true);
+
+    if (useFirebaseAuth && emailInput.trim()) {
+      // Firebase Auth: sign in with email & password
+      try {
+        const userCred = await signInWithEmailAndPassword(auth!, emailInput.trim(), passwordInput);
+        setAdminEmail(userCred.user.email);
+        setIsAuthenticated(true);
+        sessionStorage.setItem('beyond_admin_auth', 'true');
+        sessionStorage.setItem('beyond_admin_auth_method', 'firebase');
+        setAuthError(null);
+      } catch (err: any) {
+        const code = err?.code || '';
+        if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+          setAuthError('Invalid email or password. Please try again.');
+        } else if (code === 'auth/too-many-requests') {
+          setAuthError('Too many failed attempts. Please try again in a few minutes.');
+        } else {
+          setAuthError('Sign-in error: ' + (err?.message || code));
+        }
+      }
     } else {
-      setAuthError('Invalid password. Demo password is: ' + BRAND_CONFIG.ADMIN_PASSWORD);
+      // Demo fallback: password-only check
+      if (passwordInput === BRAND_CONFIG.ADMIN_PASSWORD) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('beyond_admin_auth', 'true');
+        sessionStorage.setItem('beyond_admin_auth_method', 'demo');
+      } else {
+        setAuthError('Incorrect password.');
+      }
     }
+
+    setIsSigningIn(false);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      if (auth && sessionStorage.getItem('beyond_admin_auth_method') === 'firebase') {
+        await signOut(auth);
+      }
+    } catch { /* ignore */ }
+    setIsAuthenticated(false);
+    setAdminEmail(null);
+    sessionStorage.removeItem('beyond_admin_auth');
+    sessionStorage.removeItem('beyond_admin_auth_method');
   };
 
   const handleResetDemoData = () => {
@@ -136,7 +237,7 @@ export const DashboardPage: React.FC = () => {
       const matchesSearch =
         lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.phone.includes(searchQuery) ||
-        lead.city.toLowerCase().includes(searchQuery.toLowerCase());
+        (lead.city ? lead.city.toLowerCase().includes(searchQuery.toLowerCase()) : false);
 
       // Priority
       const matchesPriority = priorityFilter === 'All' || lead.priority === priorityFilter;
@@ -172,56 +273,105 @@ export const DashboardPage: React.FC = () => {
     { name: '1-on-1 Booked', count: bookingsCount, fill: '#059669' },
   ];
 
-  // 1. Password Protection Screen
+  // 1. Login Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#F5F8FB] flex items-center justify-center p-4">
-        <div className="bg-white p-7 sm:p-9 rounded-3xl border border-slate-200 shadow-xl max-w-md w-full space-y-6 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-[#14305E] text-[#F2A12B] flex items-center justify-center mx-auto shadow-md">
-            <Lock className="w-6 h-6" />
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-[#0d1f3c] via-[#14305E] to-[#1B7A9C] flex items-center justify-center p-4">
+        <div className="bg-white/95 backdrop-blur-sm p-8 sm:p-10 rounded-3xl border border-white/20 shadow-2xl max-w-md w-full space-y-7">
 
-          <div className="space-y-1">
-            <h2 className="text-xl font-extrabold text-[#14305E]">
-              Counsellor Dashboard Access
-            </h2>
-            <p className="text-xs text-slate-500">
-              Enter advisor passcode to view verified leads & scores.
-            </p>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4 text-left">
+          {/* Header */}
+          <div className="text-center space-y-3">
+            <div className="w-14 h-14 rounded-2xl bg-[#14305E] flex items-center justify-center mx-auto shadow-lg">
+              <Lock className="w-7 h-7 text-[#F2A12B]" />
+            </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Admin Password
+              <h2 className="text-2xl font-extrabold text-[#14305E]">BeyondEducations</h2>
+              <p className="text-sm font-semibold text-slate-500 mt-0.5">Counsellor Portal — Secure Access</p>
+            </div>
+          </div>
+
+          {/* Auth Mode Badge */}
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold border ${
+            useFirebaseAuth
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-amber-50 text-amber-700 border-amber-200'
+          }`}>
+            <ShieldAlert className="w-3.5 h-3.5" />
+            {useFirebaseAuth
+              ? '🔐 Firebase Auth — Sign in with your counsellor account'
+              : '🔑 Demo Mode — Use demo password to enter'}
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            {useFirebaseAuth && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="email"
+                    required
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    placeholder="counsellor@beyondeducations.in"
+                    autoComplete="email"
+                    className="w-full pl-9 pr-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1B7A9C] focus:outline-none transition"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                {useFirebaseAuth ? 'Password' : 'Admin Password'}
               </label>
               <input
                 type="password"
                 required
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Enter password"
-                className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1B7A9C] focus:outline-hidden"
+                placeholder={useFirebaseAuth ? 'Your account password' : 'Enter demo password'}
+                autoComplete="current-password"
+                className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1B7A9C] focus:outline-none transition"
               />
-              <span className="text-[11px] text-[#1B7A9C] font-semibold block mt-1">
-                Password: {BRAND_CONFIG.ADMIN_PASSWORD}
-              </span>
+              {!useFirebaseAuth && (
+                <p className="text-[11px] text-slate-400 mt-1">
+                  Demo password: <span className="font-bold text-[#1B7A9C]">{BRAND_CONFIG.ADMIN_PASSWORD}</span>
+                </p>
+              )}
             </div>
 
             {authError && (
-              <p className="text-xs text-rose-600 font-semibold text-center">
-                {authError}
-              </p>
+              <div className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-xl">
+                <ShieldAlert className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-rose-700 font-medium">{authError}</p>
+              </div>
             )}
 
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-[#14305E] hover:bg-[#1B7A9C] text-white font-bold text-sm shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
+              disabled={isSigningIn}
+              className="w-full py-3 px-4 rounded-xl bg-[#14305E] hover:bg-[#1B7A9C] text-white font-bold text-sm shadow-md transition-all active:scale-98 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <span>Authenticate & Enter</span>
-              <ArrowRight className="w-4 h-4" />
+              {isSigningIn ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span>Signing in...</span>
+                </>
+              ) : (
+                <>
+                  <span>{useFirebaseAuth ? 'Sign In Securely' : 'Enter Dashboard'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
+
+          <p className="text-center text-[10px] text-slate-400">
+            BeyondEducations · Indiranagar, Bengaluru · Restricted Access
+          </p>
         </div>
       </div>
     );
@@ -233,20 +383,56 @@ export const DashboardPage: React.FC = () => {
         {/* Top Header Bar */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-black text-[#14305E]">
                 Counsellor Lead Portal
               </h1>
               <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#1B7A9C]/10 text-[#1B7A9C]">
                 {BRAND_CONFIG.CITY} Office
               </span>
+
+              {isFirebaseLive ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                  Firebase Realtime DB
+                </span>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200"
+                  title="Configure Firebase environment variables to connect live cloud Firestore"
+                >
+                  <Database className="w-3 h-3 text-amber-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  Local Demo DB
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               Real-time student leads with automated scoring and qualification breakdown.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center flex-wrap gap-2">
+            {/* Signed-in user */}
+            {adminEmail && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                <Mail className="w-3 h-3" />
+                {adminEmail}
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={loadLeads}
+              disabled={isLoadingLeads}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl border border-slate-300 shadow-2xs transition-all active:scale-95 disabled:opacity-50"
+              title="Refresh leads list"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-[#1B7A9C] ${isLoadingLeads ? 'animate-spin' : ''}`} />
+              <span>{isLoadingLeads ? 'Syncing...' : 'Refresh'}</span>
+            </button>
+
             <button
               type="button"
               onClick={handleResetDemoData}
@@ -264,11 +450,130 @@ export const DashboardPage: React.FC = () => {
               <Download className="w-3.5 h-3.5 text-[#F2A12B]" />
               <span>Export CSV</span>
             </button>
+
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 shadow-2xs transition-all active:scale-95"
+              title="Sign out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           </div>
         </div>
 
-        {/* KPI Cards Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* Admin Navigation Tabs */}
+        <div className="flex items-center flex-wrap gap-2 p-1.5 bg-slate-200/80 rounded-2xl border border-slate-300/60 shadow-2xs">
+          <button
+            type="button"
+            onClick={() => setAdminTab('leads')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'leads'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Users className="w-4 h-4 text-[#F2A12B]" />
+            <span>Student Leads &amp; Funnel</span>
+            <span className="ml-1 px-2 py-0.5 rounded-full text-[10px] bg-white/20 text-white font-extrabold">
+              {leads.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('colleges')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'colleges'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Building className="w-4 h-4 text-emerald-400" />
+            <span>Colleges We Work With</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('questions')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'questions'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <HelpCircle className="w-4 h-4 text-amber-400" />
+            <span>UG Quiz Questions (23)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('fasttrack')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'fasttrack'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-[#F2A12B]" />
+            <span>PG &amp; Abroad Questions</span>
+            <span className="px-1.5 py-0.5 rounded-md text-[9px] bg-[#F2A12B] text-[#14305E] font-black uppercase">
+              CRUD
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('network')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'network'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <Globe2 className="w-4 h-4 text-cyan-400" />
+            <span>UG / PG / Abroad &amp; Hubs</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('whatsapp')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'whatsapp'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <MessageCircle className="w-4 h-4 text-[#25D366] fill-current" />
+            <span>WhatsApp &amp; Helpline</span>
+            <span className="px-1.5 py-0.5 rounded-md text-[9px] bg-emerald-500 text-white font-black uppercase">
+              CRUD
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAdminTab('faqs')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              adminTab === 'faqs'
+                ? 'bg-[#14305E] text-white shadow-sm'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/60'
+            }`}
+          >
+            <HelpCircle className="w-4 h-4 text-amber-400" />
+            <span>FAQs Manager</span>
+            <span className="px-1.5 py-0.5 rounded-md text-[9px] bg-amber-500 text-white font-black uppercase">
+              CRUD
+            </span>
+          </button>
+        </div>
+
+        {/* Tab 1: Leads & Funnel */}
+        {adminTab === 'leads' && (
+          <div className="space-y-6">
+            {/* KPI Cards Row */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-1">
             <span className="text-[11px] font-bold text-slate-400 block uppercase">
               Quizzes Started
@@ -554,8 +859,28 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+    )}
 
-      {/* Lead Detail Inspection Drawer */}
+    {/* Tab 2: Colleges We Work With */}
+    {adminTab === 'colleges' && <CollegeManager />}
+
+    {/* Tab 3: Quiz Questions Manager */}
+    {adminTab === 'questions' && <QuestionManager />}
+
+    {/* Tab 3.5: Fast-Track Questions Manager (PG & Study Abroad) */}
+    {adminTab === 'fasttrack' && <FastTrackQuestionManager />}
+
+    {/* Tab 4: Network & Scope Hubs */}
+    {adminTab === 'network' && <NetworkScopeManager />}
+
+    {/* Tab 5: WhatsApp & Helpline CRUD */}
+    {adminTab === 'whatsapp' && <WhatsAppContactManager />}
+
+    {/* Tab 6: FAQ Manager CRUD */}
+    {adminTab === 'faqs' && <FaqManager />}
+  </div>
+
+  {/* Lead Detail Inspection Drawer */}
       <LeadDrawer
         lead={selectedLead}
         onClose={() => setSelectedLead(null)}

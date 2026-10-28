@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { BRAND_CONFIG } from '../config/brand';
 import { Logo } from './Logo';
 import { deleteUserData } from '../lib/storage';
-import { MapPin, ShieldCheck, Trash2, CheckCircle2 } from 'lucide-react';
+import {
+  ContactSettings,
+  getLocalContactSettings,
+  subscribeToContactSettings,
+  cleanPhoneForWhatsApp,
+} from '../lib/contactService';
+import { MapPin, ShieldCheck, Trash2, CheckCircle2, Phone, MessageCircle } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [deletedSuccess, setDeletedSuccess] = useState(false);
+  const [contact, setContact] = useState<ContactSettings>(() => getLocalContactSettings());
+
+  useEffect(() => {
+    const unsub = subscribeToContactSettings((liveSettings) => {
+      setContact(liveSettings);
+    });
+    return () => unsub();
+  }, []);
 
   const handleDeleteData = () => {
     if (window.confirm('Are you sure you want to delete all stored quiz answers and contact data from this browser?')) {
@@ -22,6 +36,8 @@ export const Footer: React.FC = () => {
     }
   };
 
+  const cleanWa = cleanPhoneForWhatsApp(contact.whatsappNumber);
+
   return (
     <footer className="bg-white border-t border-slate-200 mt-auto pt-10 pb-8 text-slate-600 text-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -33,12 +49,27 @@ export const Footer: React.FC = () => {
               {BRAND_CONFIG.TAGLINE}
             </p>
             <div className="flex items-center gap-1.5 text-xs text-slate-500">
-              <MapPin className="w-3.5 h-3.5 text-[#1B7A9C]" />
-              <span>{BRAND_CONFIG.CITY}, {BRAND_CONFIG.STATE}, {BRAND_CONFIG.COUNTRY}</span>
+              <MapPin className="w-3.5 h-3.5 text-[#1B7A9C] flex-shrink-0" />
+              <span>{contact.officeAddress || BRAND_CONFIG.ADDRESS}</span>
             </div>
-            <p className="text-xs text-slate-400">
-              {BRAND_CONFIG.ADDRESS}
-            </p>
+            <div className="pt-1 flex flex-wrap items-center gap-3 text-xs">
+              <a
+                href={`tel:${contact.callingPhone.replace(/\s+/g, '')}`}
+                className="flex items-center gap-1 font-semibold text-[#14305E] hover:text-[#1B7A9C]"
+              >
+                <Phone className="w-3.5 h-3.5 text-[#1B7A9C]" />
+                <span>{contact.callingPhone}</span>
+              </a>
+              <a
+                href={`https://wa.me/${cleanWa}?text=${encodeURIComponent('Hi BeyondEducations, I need admission guidance')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 font-semibold text-emerald-600 hover:text-emerald-700"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
           </div>
 
           {/* Col 2: Regulatory & Guidance Disclaimer */}

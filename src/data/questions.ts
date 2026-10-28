@@ -3,6 +3,7 @@ export type RiasecType = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 export interface QuestionOption {
   value: string;
   labelKey: string;
+  label?: string; // Direct custom label set by admin
 }
 
 export interface Question {
@@ -11,12 +12,16 @@ export interface Question {
   type: 'rating' | 'single' | 'multi' | 'compound';
   riasecType?: RiasecType;
   titleKey: string;
+  title?: string; // Direct custom title set by admin
   subtitleKey?: string;
+  subtitle?: string; // Direct custom subtitle set by admin
   options?: QuestionOption[];
+  active?: boolean;
   // For compound questions
   subFields?: {
     key: string;
     labelKey: string;
+    label?: string;
     type: 'single' | 'multi';
     options: QuestionOption[];
   }[];

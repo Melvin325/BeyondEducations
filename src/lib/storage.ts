@@ -1,5 +1,13 @@
 import { QuizAnswers } from './scoring';
 import { Lead, DEMO_LEADS } from '../data/demoLeads';
+import {
+  fbSaveLead,
+  fbGetLeads,
+  fbUpdateLead,
+  fbDeleteUserData,
+  isFirebaseConfigured,
+  fbSubscribeLeads,
+} from './firebase';
 
 const STORAGE_KEYS = {
   LANGUAGE: 'beyond_lang',
@@ -84,7 +92,7 @@ export function getStoredCurrentLead(): Lead | null {
 export function saveCurrentLead(lead: Lead): void {
   try {
     localStorage.setItem(STORAGE_KEYS.CURRENT_LEAD, JSON.stringify(lead));
-    // Also push to counsellor leads list
+    // Push to counsellor list & async sync to Firebase
     saveLeadToCounsellorList(lead);
   } catch (e) {
     console.error('Failed to save current lead', e);
@@ -106,6 +114,42 @@ export function getCounsellorLeads(): Lead[] {
   }
 }
 
+/**
+ * Async fetch leads with live Firebase query first, falling back to localStorage
+ */
+export async function getCounsellorLeadsAsync(): Promise<{ leads: Lead[]; isLive: boolean }> {
+  if (isFirebaseConfigured()) {
+    const { leads, isLive } = await fbGetLeads();
+    if (isLive && leads.length > 0) {
+      // Cache latest fetched leads in localStorage
+      try {
+        localStorage.setItem(STORAGE_KEYS.COUNSELLOR_LEADS, JSON.stringify(leads));
+      } catch {
+        // ignore
+      }
+      return { leads, isLive: true };
+    }
+  }
+
+  // Fallback to local storage
+  return { leads: getCounsellorLeads(), isLive: false };
+}
+
+/**
+ * Subscribe to realtime updates from Firestore
+ */
+export function subscribeToCounsellorLeads(callback: (leads: Lead[]) => void) {
+  if (!isFirebaseConfigured()) return null;
+  return fbSubscribeLeads((leads) => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.COUNSELLOR_LEADS, JSON.stringify(leads));
+    } catch {
+      // ignore
+    }
+    callback(leads);
+  });
+}
+
 export function saveLeadToCounsellorList(newLead: Lead): void {
   try {
     const list = getCounsellorLeads();
@@ -118,6 +162,11 @@ export function saveLeadToCounsellorList(newLead: Lead): void {
       updated = [newLead, ...list];
     }
     localStorage.setItem(STORAGE_KEYS.COUNSELLOR_LEADS, JSON.stringify(updated));
+
+    // Asynchronously push to Firebase Firestore
+    fbSaveLead(newLead).catch((err) => {
+      console.warn('Async lead sync to Firebase error:', err);
+    });
   } catch (e) {
     console.error('Failed to save to counsellor leads', e);
   }
@@ -134,6 +183,11 @@ export function updateLeadInCounsellorList(id: string, updates: Partial<Lead>): 
     if (current && current.id === id) {
       localStorage.setItem(STORAGE_KEYS.CURRENT_LEAD, JSON.stringify({ ...current, ...updates }));
     }
+
+    // Asynchronously update in Firebase Firestore
+    fbUpdateLead(id, updates).catch((err) => {
+      console.warn('Async lead update to Firebase error:', err);
+    });
   } catch (e) {
     console.error('Failed to update lead', e);
   }
@@ -152,9 +206,14 @@ export function deleteUserData(): void {
   try {
     const current = getStoredCurrentLead();
     if (current) {
-      // Remove from leads
+      // Remove from local leads
       const list = getCounsellorLeads().filter((l) => l.id !== current.id && l.phone !== current.phone);
       localStorage.setItem(STORAGE_KEYS.COUNSELLOR_LEADS, JSON.stringify(list));
+
+      // Asynchronously delete from Firebase Firestore
+      fbDeleteUserData(current.phone).catch((err) => {
+        console.warn('Async lead delete from Firebase error:', err);
+      });
     }
     localStorage.removeItem(STORAGE_KEYS.CURRENT_LEAD);
     localStorage.removeItem(STORAGE_KEYS.QUIZ_ANSWERS);

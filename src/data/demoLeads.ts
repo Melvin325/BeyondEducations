@@ -15,29 +15,30 @@ export interface Lead {
   id: string;
   name: string;
   phone: string;
-  email: string;
-  city: string;
+  email?: string;
+  city?: string;
   parentPhone?: string;
   fillerType: 'Student' | 'Parent';
   language: 'en' | 'kn' | 'ta' | 'ml';
   stream: string;
-  budget: string;
-  percentage: string;
-  entranceExams: string[];
-  status12: string;
-  decisionTime: string;
-  worry: string;
-  preferredLocation: string;
-  relocate: string;
-  workPreference: string;
-  careerValue: string;
-  heavyMathsComfort: string;
-  bestSubjects: string[];
-  riasecScores: Record<string, number>;
-  profileCode: string;
-  profileName: string;
-  topCourses: string[]; // course IDs
-  scoreBreakdown: LeadScoreBreakdown;
+  budget?: string;
+  percentage?: string;
+  entranceExams?: string[];
+  status12?: string;
+  decisionTime?: string;
+  worry?: string;
+  preferredLocation?: string;
+  relocate?: string;
+  workPreference?: string;
+  careerValue?: string;
+  heavyMathsComfort?: string;
+  bestSubjects?: string[];
+  riasecScores?: Record<string, number>;
+  dimensionScores?: Record<string, number>;
+  profileCode?: string;
+  profileName?: string;
+  topCourses?: string[]; // course IDs
+  scoreBreakdown?: LeadScoreBreakdown;
   leadScore: number;
   priority: LeadPriority;
   status: LeadStatus;
@@ -47,6 +48,7 @@ export interface Lead {
     timeSlot?: string;
   };
   notes?: string;
+  internalNotes?: string;
   createdAt: string;
 }
 

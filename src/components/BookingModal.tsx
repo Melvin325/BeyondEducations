@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { updateLeadInCounsellorList } from '../lib/storage';
+import { updateLeadInCounsellorList, saveLeadToCounsellorList } from '../lib/storage';
+import { fbCreateConsultation } from '../lib/firebase';
 import { Lead } from '../data/demoLeads';
-import { Calendar, Clock, Video, MapPin, X, CheckCircle2 } from 'lucide-react';
+import { Calendar, Clock, Video, MapPin, X, CheckCircle2, User, Phone } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface BookingModalProps {
@@ -36,11 +37,30 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   const [selectedDate, setSelectedDate] = useState<string>(defaultDateStr);
   const [selectedSlot, setSelectedSlot] = useState<string>(TIME_SLOTS[0]);
   const [mode, setMode] = useState<'online' | 'in_person'>('online');
+  const [guestName, setGuestName] = useState<string>('');
+  const [guestPhone, setGuestPhone] = useState<string>('');
+  const [formError, setFormError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
 
   if (!isOpen) return null;
 
   const handleConfirm = () => {
+    setFormError(null);
+
+    const nameToUse = lead?.name || guestName.trim();
+    const phoneToUse = lead?.phone || guestPhone.trim();
+
+    if (!nameToUse) {
+      setFormError('Please enter your full name.');
+      return;
+    }
+    if (!phoneToUse || phoneToUse.replace(/\D/g, '').length < 10) {
+      setFormError('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    const leadIdToUse = lead?.id || `lead-consult-${Date.now()}`;
+
     if (lead) {
       updateLeadInCounsellorList(lead.id, {
         status: 'Counselling booked',
@@ -50,7 +70,48 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           timeSlot: selectedSlot,
         },
       });
+    } else {
+      // Save new direct consultation lead
+      const newConsultLead: Lead = {
+        id: leadIdToUse,
+        name: nameToUse,
+        phone: phoneToUse,
+        fillerType: 'Student',
+        language: 'en',
+        stream: 'Direct Consultation Request',
+        priority: 'Hot',
+        status: 'Counselling booked',
+        leadScore: 12,
+        dimensionScores: { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 },
+        scoreBreakdown: {
+          status12Score: 3,
+          decisionTimeScore: 3,
+          parentPhoneScore: 0,
+          budgetScore: 2,
+          worryScore: 2,
+          completionScore: 2,
+          total: 12,
+        },
+        createdAt: new Date().toISOString(),
+        bookingStatus: {
+          booked: true,
+          date: selectedDate,
+          timeSlot: selectedSlot,
+        },
+        internalNotes: `Direct 1-on-1 consultation booking (${mode === 'online' ? 'Google Meet / Video' : 'Indiranagar Office'})`,
+      };
+      saveLeadToCounsellorList(newConsultLead);
     }
+
+    // Persist in Firebase Firestore
+    fbCreateConsultation({
+      leadId: leadIdToUse,
+      studentName: nameToUse,
+      phone: phoneToUse,
+      preferredDate: selectedDate,
+      timeSlot: selectedSlot,
+      counsellingMode: mode,
+    }).catch((err) => console.warn('Firebase consultation sync warning:', err));
 
     try {
       confetti({
@@ -94,6 +155,50 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <p className="text-xs sm:text-sm text-slate-600">
                 {t('booking.subtitle')}
               </p>
+
+              {/* Guest name and phone inputs if booked directly from homepage */}
+              {!lead && (
+                <div className="space-y-2.5 pt-1">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Student / Parent Name *
+                    </label>
+                    <div className="relative">
+                      <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="e.g. Suhas Rao"
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                        className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1B7A9C] focus:outline-hidden"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Mobile / WhatsApp Number *
+                    </label>
+                    <div className="relative">
+                      <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        placeholder="10-digit mobile number"
+                        value={guestPhone}
+                        onChange={(e) => setGuestPhone(e.target.value.replace(/\D/g, ''))}
+                        className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#1B7A9C] focus:outline-hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formError && (
+                <div className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                  {formError}
+                </div>
+              )}
 
               {/* Consultation Mode */}
               <div>

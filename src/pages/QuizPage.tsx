@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { QUIZ_QUESTIONS, Question } from '../data/questions';
+import { Question } from '../data/questions';
+import { getLocalQuestions, subscribeToQuestions } from '../lib/questionService';
 import {
   getStoredQuizAnswers,
   saveQuizAnswers,
@@ -31,10 +32,28 @@ export const QuizPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
+  // Load questions dynamically from Firestore / localStorage
+  const [questions, setQuestions] = useState<Question[]>(() => {
+    const list = getLocalQuestions();
+    return list.filter((q) => q.active !== false);
+  });
+
+  // Subscribe to live question updates
+  useEffect(() => {
+    const unsubscribe = subscribeToQuestions((liveList) => {
+      if (liveList && liveList.length > 0) {
+        setQuestions(liveList.filter((q) => q.active !== false));
+      }
+    });
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
   // Restore step and answers from localStorage
   const [currentStep, setCurrentStep] = useState<number>(() => {
     const saved = getStoredQuizStep();
-    return saved >= 0 && saved < QUIZ_QUESTIONS.length ? saved : 0;
+    return saved >= 0 ? saved : 0;
   });
 
   const [answers, setAnswers] = useState<QuizAnswers>(() => {
@@ -52,9 +71,11 @@ export const QuizPage: React.FC = () => {
     saveQuizAnswers(answers);
   }, [answers]);
 
-  const question: Question = QUIZ_QUESTIONS[currentStep];
-  const totalQuestions = QUIZ_QUESTIONS.length;
-  const progressPercent = Math.round(((currentStep + 1) / totalQuestions) * 100);
+  const totalQuestions = questions.length;
+  // Ensure valid currentStep within bounds
+  const validStep = Math.min(Math.max(0, currentStep), Math.max(0, totalQuestions - 1));
+  const question: Question = questions[validStep] || questions[0];
+  const progressPercent = totalQuestions > 0 ? Math.round(((validStep + 1) / totalQuestions) * 100) : 0;
 
   // Helper for answering rating questions (Part A)
   const handleRatingAnswer = (ratingValue: number) => {
@@ -262,11 +283,11 @@ export const QuizPage: React.FC = () => {
                 Q{question.id}.
               </span>
               <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 leading-snug">
-                {t(question.titleKey)}
+                {question.title || t(question.titleKey)}
               </h2>
-              {question.subtitleKey && question.part !== 'C' && (
+              {(question.subtitle || question.subtitleKey) && question.part !== 'C' && (
                 <p className="text-xs text-slate-500">
-                  {t(question.subtitleKey)}
+                  {question.subtitle || (question.subtitleKey ? t(question.subtitleKey) : '')}
                 </p>
               )}
             </div>
@@ -320,7 +341,7 @@ export const QuizPage: React.FC = () => {
                             : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                         }`}
                       >
-                        <span>{t(opt.labelKey)}</span>
+                        <span>{opt.label || (opt.labelKey ? t(opt.labelKey) : opt.value)}</span>
                         {selected && <Check className="w-4 h-4 text-[#F2A12B]" />}
                       </button>
                     );
@@ -367,7 +388,7 @@ export const QuizPage: React.FC = () => {
                           : 'bg-[#F5F8FB] text-slate-700 border-slate-200 hover:bg-white hover:border-[#1B7A9C]'
                       }`}
                     >
-                      <span>{t(opt.labelKey)}</span>
+                      <span>{opt.label || (opt.labelKey ? t(opt.labelKey) : opt.value)}</span>
                       {isSelected ? (
                         <div className="w-5 h-5 rounded-full bg-[#F2A12B] text-[#14305E] flex items-center justify-center flex-shrink-0">
                           <Check className="w-3.5 h-3.5 stroke-[3]" />

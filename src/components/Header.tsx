@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Logo } from './Logo';
-import { Sparkles, Globe } from 'lucide-react';
+import { Sparkles, Globe, Calendar } from 'lucide-react';
+import {
+  ContactSettings,
+  getLocalContactSettings,
+  subscribeToContactSettings,
+} from '../lib/contactService';
 
 const LANGUAGES = [
   { code: 'en', label: 'EN' },
@@ -15,6 +20,14 @@ export const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [contact, setContact] = useState<ContactSettings>(() => getLocalContactSettings());
+
+  useEffect(() => {
+    const unsub = subscribeToContactSettings((newSettings) => {
+      setContact(newSettings);
+    });
+    return () => unsub();
+  }, []);
 
   const handleLanguageChange = (code: string) => {
     i18n.changeLanguage(code);
@@ -23,16 +36,51 @@ export const Header: React.FC = () => {
   const isQuiz = location.pathname.startsWith('/quiz');
   const isAdmin = location.pathname.startsWith('/admin');
 
+  const scrollToColleges = () => {
+    if (location.pathname !== '/') {
+      navigate('/#partner-colleges-section');
+      return;
+    }
+    const el = document.getElementById('partner-colleges-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-        {/* Brand Logo */}
-        <div onClick={() => navigate('/')} className="cursor-pointer flex-shrink-0">
-          <Logo size="sm" />
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+        {/* Brand Logo & Tagline */}
+        <div className="flex items-center gap-3">
+          <div onClick={() => navigate('/')} className="cursor-pointer flex-shrink-0">
+            <Logo size="sm" />
+          </div>
+
+          {/* Quick Nav Links on Desktop */}
+          {!isQuiz && !isAdmin && (
+            <nav className="hidden lg:flex items-center gap-4 text-xs font-bold text-slate-600 pl-3 border-l border-slate-200">
+              <button
+                type="button"
+                onClick={scrollToColleges}
+                className="hover:text-[#14305E] transition-colors"
+              >
+                Partner Colleges
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('dynamic-faq-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-[#14305E] transition-colors"
+              >
+                FAQs
+              </button>
+            </nav>
+          )}
         </div>
 
-        {/* Right Section: Language switcher & CTA */}
+        {/* Right Section: Helpline, Language switcher & CTA */}
         <div className="flex items-center gap-1.5 sm:gap-3">
+
           {/* Language Switcher */}
           <div className="flex items-center bg-slate-100/90 rounded-full p-0.5 border border-slate-200 text-xs">
             <span className="hidden sm:inline-flex items-center pl-2 pr-1 text-slate-500">

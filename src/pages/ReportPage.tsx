@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { getStoredCurrentLead, getStoredQuizAnswers } from '../lib/storage';
 import { evaluateQuiz, QuizResult } from '../lib/scoring';
 import { Lead } from '../data/demoLeads';
-import { SAMPLE_COLLEGES } from '../data/sampleColleges';
+import { College } from '../data/colleges';
+import { getLocalColleges, subscribeToColleges } from '../lib/collegeService';
 import { Logo } from '../components/Logo';
 import { InterestRadarChart } from '../components/RadarChart';
 import { BookingModal } from '../components/BookingModal';
@@ -36,6 +37,20 @@ export const ReportPage: React.FC = () => {
   const [result, setResult] = useState<QuizResult | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState<boolean>(false);
+  const [colleges, setColleges] = useState<College[]>(() => getLocalColleges());
+  const [collegeRegionFilter, setCollegeRegionFilter] = useState<string>('All');
+  const [collegeLevelFilter, setCollegeLevelFilter] = useState<string>('All');
+
+  useEffect(() => {
+    const unsub = subscribeToColleges((list) => {
+      if (list && list.length > 0) {
+        setColleges(list);
+      }
+    });
+    return () => {
+      if (unsub) unsub();
+    };
+  }, []);
 
   useEffect(() => {
     const currentLead = getStoredCurrentLead();
@@ -247,7 +262,7 @@ export const ReportPage: React.FC = () => {
               {t('report.section_radar')}
             </h3>
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col items-center">
-              <InterestRadarChart scores={lead.riasecScores} />
+              <InterestRadarChart scores={lead.riasecScores || result.riasecScores} />
             </div>
           </div>
 
@@ -383,44 +398,92 @@ export const ReportPage: React.FC = () => {
             </div>
           </div>
 
-          {/* f) BUDGET-MATCHED COLLEGE CATEGORIES (BENGALURU) */}
+          {/* f) COLLEGES WE WORK WITH (UG, PG, STUDY ABROAD) */}
           <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-extrabold text-[#14305E]">
-                {t('report.section_colleges')}
-              </h3>
-              <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                {t('report.colleges_sample_tag')}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-base font-extrabold text-[#14305E]">
+                  {t('report.section_colleges')}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Karnataka (Bangalore), Kerala, Tamil Nadu, Pan-India & Study Abroad Institutions
+                </p>
+              </div>
+              <span className="self-start sm:self-auto text-[10px] font-semibold text-[#1B7A9C] bg-[#1B7A9C]/10 px-2.5 py-1 rounded-full">
+                {colleges.filter((c) => c.isPartner).length} Direct Partner Institutions
               </span>
             </div>
 
-            <div className="space-y-4">
-              {(['Government', 'Private', 'Deemed'] as const).map((cat) => (
-                <div key={cat} className="space-y-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {cat} Colleges ({cat === 'Government' ? 'Subsidised Fee' : cat === 'Private' ? 'Karnataka & Affiliated' : 'Autonomous / Deemed'})
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                    {SAMPLE_COLLEGES[cat].map((col) => (
-                      <div
-                        key={col.id}
-                        className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs space-y-1.5 text-xs relative"
-                      >
+            {/* Region & Level filter chips */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              {['All', 'Karnataka (Bangalore)', 'Kerala', 'Tamil Nadu', 'Pan-India', 'Study Abroad'].map((reg) => (
+                <button
+                  key={reg}
+                  type="button"
+                  onClick={() => setCollegeRegionFilter(reg)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                    collegeRegionFilter === reg
+                      ? 'bg-[#14305E] text-white shadow-xs'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  {reg === 'Karnataka (Bangalore)' ? 'Bangalore / Karnataka' : reg}
+                </button>
+              ))}
+            </div>
+
+            {/* Colleges Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-1">
+              {colleges
+                .filter((c) => collegeRegionFilter === 'All' || c.region === collegeRegionFilter)
+                .slice(0, 9)
+                .map((col) => (
+                  <div
+                    key={col.id}
+                    className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-2 text-xs relative flex flex-col justify-between hover:border-[#1B7A9C]/50 transition-all"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#1B7A9C] bg-[#1B7A9C]/10 px-1.5 py-0.5 rounded">
+                          {col.region}
+                        </span>
                         {col.isPartner && (
-                          <span className="absolute top-2 right-2 text-[9px] font-extrabold text-[#1B7A9C] bg-[#1B7A9C]/10 px-1.5 py-0.5 rounded-sm">
-                            {t('report.partner_tag')}
+                          <span className="text-[9px] font-extrabold text-[#F2A12B] bg-[#14305E] px-2 py-0.5 rounded-full shadow-2xs">
+                            ★ Official Partner
                           </span>
                         )}
-                        <h5 className="font-bold text-slate-900 pr-12">{col.name}</h5>
-                        <p className="text-[11px] text-slate-500">{col.location}</p>
-                        <div className="pt-1 flex items-center justify-between border-t border-slate-100 text-[11px]">
-                          <span className="font-semibold text-slate-700">{col.indicativeFee}</span>
-                        </div>
                       </div>
-                    ))}
+                      <h5 className="font-bold text-slate-900 leading-snug">{col.name}</h5>
+                      <p className="text-[11px] text-slate-500 mt-0.5">{col.location}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 space-y-1">
+                      <div className="flex flex-wrap gap-1">
+                        {col.levels.map((lvl) => (
+                          <span
+                            key={lvl}
+                            className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700"
+                          >
+                            {lvl}
+                          </span>
+                        ))}
+                        {col.category && (
+                          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-800">
+                            {col.category}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] pt-1">
+                        <span className="font-bold text-[#14305E]">{col.indicativeFee}</span>
+                        {col.accreditation && (
+                          <span className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                            {col.accreditation.split('·')[0]}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
 

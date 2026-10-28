@@ -129,6 +129,16 @@ export const TeaserPage: React.FC = () => {
       priority,
       status: 'New',
       createdAt: new Date().toISOString(),
+      internalNotes: (() => {
+        try {
+          const raw = localStorage.getItem('beyond_target_college');
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            return `🎯 Target College Inquiry from Homepage: ${parsed.name} (${parsed.location || parsed.region})`;
+          }
+        } catch {}
+        return undefined;
+      })(),
     };
 
     saveCurrentLead(newLead);
