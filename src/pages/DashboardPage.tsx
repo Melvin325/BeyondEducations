@@ -150,7 +150,8 @@ export const DashboardPage: React.FC = () => {
       }
     } else {
       // Demo fallback: password-only check
-      if (passwordInput === BRAND_CONFIG.ADMIN_PASSWORD) {
+      const validPasswords = BRAND_CONFIG.ADMIN_PASSWORDS || [BRAND_CONFIG.ADMIN_PASSWORD];
+      if (validPasswords.includes(passwordInput as any)) {
         setIsAuthenticated(true);
         sessionStorage.setItem('beyond_admin_auth', 'true');
         sessionStorage.setItem('beyond_admin_auth_method', 'demo');

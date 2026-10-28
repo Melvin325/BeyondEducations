@@ -64,6 +64,7 @@ export const BRAND_CONFIG = {
   // Demo settings
   DEMO_OTP_HINT: 'Demo mode: enter any 4 digits',
   ADMIN_PASSWORD: 'Ashika',
+  ADMIN_PASSWORDS: ['Ashika', 'Melvin.325'],
 
   // Limits and thresholds
   MAX_QUESTIONS: 23,
